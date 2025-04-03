@@ -1,0 +1,73 @@
+﻿@page "/recordOfGamePage"
+@using ComputerService.Database
+@using ComputerService.Models
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject GamerContext ef
+<button >Получить доступ к базе данных</button>
+<h1>Выбор игры</h1>
+<select @bind="gameinput">
+    @foreach (var game in _game )
+    {
+        <option value="@game.Id">@game.NameGame</option>
+    }
+</select>
+<select @bind="gamerinput">
+    @foreach (var gamer in _gamer )
+    {
+    <option value="@gamer.Id">@gamer.FirstName</option>
+    }
+</select>
+<button @onclick="RecordOfGame">Создать запись</button>
+<table>
+    <tr>
+        <th>Игра</th>
+        <th>Игрок</th>
+    </tr>
+    
+    
+        @foreach (var game in ef.RecordOfGames
+                      .Include(x=> x.Game)
+                      .Include(x=> x.Player).ToList())
+        { 
+            <tr>
+                <td>@game.Game!.NameGame</td>
+            </tr>
+        }
+        @foreach (var gamer in ef.RecordOfGames.ToList())
+        {
+                <tr>
+                    <td>@gamer.Player</td>
+                </tr>
+        }
+</table>
+
+
+@code {
+    
+    RecordOfGame _recordOfGame = new();
+    
+    IList<Game> _game = new List<Game>();
+    IList<Gamer> _gamer = new List<Gamer>();
+    public int gameinput { get; set; }
+    public int gamerinput { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _game = ef.Games.ToList();
+        _gamer = ef.Gamers.ToList();
+    }
+
+    public void RecordOfGame()
+    {
+        _recordOfGame.GameId = gameinput;
+        _recordOfGame.PlayerId = gamerinput;
+        ef.Add(_recordOfGame);
+        ef.SaveChanges();
+        
+        _recordOfGame = new RecordOfGame();
+        _game = new List<Game>();
+        _gamer = new List<Gamer>();
+    }
+}

@@ -1,0 +1,37 @@
+﻿@page "/GameEditor/{id:int}"
+@using ComputerService.Database
+@using ComputerService.Models
+@rendermode InteractiveServer
+@inject GamerContext ef
+
+@if (_game is not null)
+{
+    <EditForm FormName="formEditItem" Model="_game" OnInvalidSubmit="@Save">
+        <a>@_game.NameGame</a>
+        <input type="text" @bind="_game.NameGame"> Изменить имя
+        <input type="text" @bind="_game.Price"> Изменить цену
+        <button type="submit">Сохранить изменения</button>
+    </EditForm>
+}
+
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    public Game? _game;
+
+    protected override void OnInitialized()
+    {
+        _game = ef.Games.FirstOrDefault(x => x.Id == id);
+    }
+
+    private void Save()
+    {
+        if (_game is null)
+        {
+            return;
+        }
+        ef.Update(_game);
+        ef.SaveChanges();
+    }
+}

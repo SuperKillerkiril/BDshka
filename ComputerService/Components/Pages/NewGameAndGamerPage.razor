@@ -1,0 +1,89 @@
+﻿@page "/newGameAndGamersPage"
+@rendermode InteractiveServer
+@using ComputerService.Database
+@using ComputerService.Models
+
+@inject GamerContext ef
+
+    <EditForm Model="_game" OnValidSubmit="@SumbitGame">
+        <h1>Создание новой игры</h1>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <a>Название для игры?</a>
+        <input type="text" @bind="_game.NameGame"/>
+        <a>Стоимость?</a>
+        <input type="number" @bind="_game.Price"/>
+        <button type="submit">Добавить игру </button>
+    </EditForm>
+    <!-- поля ввода для игры-->
+    <EditForm Model="_gamer" OnValidSubmit="@SumbitGamer">
+        <h1>Создание нового игрока</h1>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <a>Ваше имя</a>
+        <input type="text" @bind="_gamer.FirstName"/>
+        <a>Фамилия</a>
+        <input type="text" @bind="_gamer.MiddleName"/>
+        <a>Отчество</a>
+        <input type="text" @bind="_gamer.LastName"/>
+        <button type="submit">Добавить Игрока </button>
+    </EditForm>
+    <!-- поля ввода для игрока-->
+
+    <table>
+        <tr>
+            <th>Игра</th>
+            <th>Стоимость</th>
+            <th>Действие</th>
+        </tr>
+        @foreach (var game in ef.Games.ToList())
+        {
+            <tr>
+                <td>@game.NameGame</td>
+                <td>@game.Price</td>
+                <td>
+                    <button @onclick="() =>DeleteGame(game)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </table>
+    
+    <table>
+        <tr>
+            <th>Игрок</th>
+            <th>Прикрепленный Айди</th>
+        </tr>
+        @foreach (var gamer in ef.Gamers.ToList())
+        {
+        <tr>
+            <td>@gamer.FirstName</td>
+            <td>@gamer.Id</td>
+        </tr>
+        }
+    </table>
+
+
+@code {
+    Game _game = new Game();
+    Gamer _gamer = new Gamer();
+    
+   
+    
+    public void SumbitGamer()
+    {
+        ef.Add(_gamer);
+        ef.SaveChanges();
+        _gamer = new Gamer();
+    }
+    
+    public void SumbitGame()
+    {
+        ef.Add(_game);
+        ef.SaveChanges();
+        _game = new Game();
+    }
+
+    public void DeleteGame(Game game)
+    {
+        ef.Update(game);
+        ef.SaveChanges();
+    }
+}
