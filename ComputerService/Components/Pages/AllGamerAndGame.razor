@@ -1,0 +1,81 @@
+﻿@page "/allGamerAndGame"
+@using ComputerService.Database
+@using ComputerService.Models
+@rendermode InteractiveServer
+@inject GamerContext ef
+<h3>AllGamerAndGame:</h3>
+
+<select @onchange="OnOrderByChange">
+    <option value="FirstName">По имени</option>
+    <option value="MiddleName">По фамилии</option>
+    <option value="LastName">По отчеству</option>
+</select>
+
+<table class="table">
+    <tr>
+        <th>Игра</th>
+        <th>Стоимость</th>
+        <th>Айдишник</th>
+        <th>Действие</th>
+    </tr>
+    @foreach (var game in ef.Games.OrderBy(x => x.NameGame).ToList())
+    {
+    <tr>
+        <td>@game.NameGame</td>
+        <td>@game.Price</td>
+        <td>@game.Id</td>
+        <td>
+            <button @onclick="() =>DeleteGame(game)">Удалить</button>
+        </td>
+    </tr>
+    }
+</table>
+
+<table class="table">
+    <tr>
+        <th>Айдишник</th>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Отчество</th>
+        <th>Действие</th>
+    </tr>
+    @foreach (var gamer in ef.Gamers.ToList())
+    {
+        <tr>
+            <td>@gamer.Id</td>
+            <td>@gamer.FirstName</td>
+            <td>@gamer.MiddleName</td>
+            <td>@gamer.LastName</td>
+            <td>
+                <button @onclick="() => DeleteGamer(gamer)">Удалить</button>
+            </td>
+        </tr>
+    }
+</table>
+
+@code {
+    private List<Game> Games;
+
+    public override async Task OnInializedAsync()
+    {
+        Games = await ef.Games.OrderBy("");
+    }
+    private async Task OnOrderByChange(ChangeEventArgs e)
+    {
+        string orderBy = e.Value.ToString();
+        Games = await ef.Games.OrderBy(orderBy);
+        StateHasChanged();
+    }
+    public void DeleteGame(Game game)
+    {
+        ef.Remove(game);
+        ef.SaveChanges();
+    }
+    public void DeleteGamer(Gamer gamer)
+    {
+        ef.Remove(gamer);
+        ef.SaveChanges();
+    }
+
+   
+}

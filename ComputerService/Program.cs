@@ -28,13 +28,11 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
 using (var serviceScope = app.Services.CreateScope())
 {
     var context = serviceScope.ServiceProvider.GetRequiredService<GamerContext>();  
     context.Database.Migrate();
-}
-{
-    
 }
 
 app.Run();

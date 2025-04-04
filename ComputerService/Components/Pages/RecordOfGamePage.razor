@@ -4,8 +4,8 @@
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject GamerContext ef
-<button >Получить доступ к базе данных</button>
-<h1>Выбор игры</h1>
+
+<h1>Запись на игру</h1>
 <select @bind="gameinput">
     @foreach (var game in _game )
     {
@@ -19,27 +19,22 @@
     }
 </select>
 <button @onclick="RecordOfGame">Создать запись</button>
-<table>
+
+<table class="table">
     <tr>
         <th>Игра</th>
         <th>Игрок</th>
-    </tr>
-    
-    
+    </tr> 
+    <tr>
         @foreach (var game in ef.RecordOfGames
                       .Include(x=> x.Game)
                       .Include(x=> x.Player).ToList())
-        { 
-            <tr>
-                <td>@game.Game!.NameGame</td>
-            </tr>
-        }
-        @foreach (var gamer in ef.RecordOfGames.ToList())
-        {
-                <tr>
-                    <td>@gamer.Player</td>
-                </tr>
-        }
+        { <td>@game.Game!.NameGame</td> }
+        @foreach (var gamer in ef.RecordOfGames
+                      .Include(x=> x.Game)
+                      .Include(x=> x.Player).ToList())
+        { <td>@gamer.Player!.FirstName</td> }
+        </tr>
 </table>
 
 
